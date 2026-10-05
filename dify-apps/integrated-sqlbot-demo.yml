@@ -1,0 +1,191 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  icon_type: emoji
+  mode: workflow
+  name: 集成 SQLBot 示例
+  use_icon_as_answer_icon: false
+dependencies: []
+kind: app
+version: 0.7.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload: {}
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: tool
+      id: start-source-sqlbot_tool-target
+      source: start
+      sourceHandle: source
+      target: sqlbot_tool
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: end
+      id: sqlbot_tool-source-end-target
+      source: sqlbot_tool
+      sourceHandle: source
+      target: end
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: 用户输入
+        type: start
+        variables:
+        - allowed_file_extensions: []
+          allowed_file_types: []
+          allowed_file_upload_methods: []
+          default: 基于 payment 表，按 customer_id 统计 amount 总和，查询总金额最高的前5个客户，返回 customer_id
+            和 total_amount
+          description: 演示默认问题：按 payment 表统计客户回款总金额排行
+          hide: false
+          json_schema: null
+          label: 问数问题
+          max_length: null
+          options: []
+          required: true
+          type: paragraph
+          variable: question
+      height: 109
+      id: start
+      position:
+        x: 80
+        y: 282
+      positionAbsolute:
+        x: 80
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        is_team_authorization: true
+        paramSchemas:
+        - form: llm
+          human_description:
+            en_US: Question
+            zh_Hans: 自然语言问数问题
+          label:
+            en_US: question
+            zh_Hans: question
+          name: question
+          required: true
+          type: string
+        - form: llm
+          human_description:
+            en_US: Datasource ID
+            zh_Hans: SQLBot 数据源 ID
+          label:
+            en_US: datasource_id
+            zh_Hans: datasource_id
+          name: datasource_id
+          required: false
+          type: string
+        - form: llm
+          human_description:
+            en_US: Return chart
+            zh_Hans: 是否返回图表
+          label:
+            en_US: return_img
+            zh_Hans: return_img
+          name: return_img
+          required: false
+          type: boolean
+        params:
+          datasource_id: ''
+          question: ''
+          return_img: ''
+        plugin_id: ''
+        plugin_unique_identifier: sqlbot_mcp
+        provider_icon:
+          background: '#ECFEFF'
+          content: 🤖
+        provider_icon_dark: null
+        provider_id: sqlbot_mcp
+        provider_name: SQLBot MCP Demo
+        provider_show_name: SQLBot MCP Demo
+        provider_type: mcp
+        selected: false
+        title: SQLBot 智能问数
+        tool_configurations: {}
+        tool_description: 调用 SQLBot 进行智能问数。SQLBot 需要先配置默认大模型和数据源。
+        tool_label: sqlbot_ask
+        tool_name: sqlbot_ask
+        tool_node_version: '2'
+        tool_parameters:
+          datasource_id:
+            type: mixed
+            value: '1'
+          question:
+            type: mixed
+            value: '{{#start.question#}}'
+          return_img:
+            type: constant
+            value: false
+        type: tool
+      height: 84
+      id: sqlbot_tool
+      position:
+        x: 390
+        y: 282
+      positionAbsolute:
+        x: 390
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    - data:
+        outputs:
+        - value_selector:
+          - sqlbot_tool
+          - text
+          variable: result
+        selected: false
+        title: 输出 SQLBot 结果
+        type: end
+      height: 88
+      id: end
+      position:
+        x: 700
+        y: 282
+      positionAbsolute:
+        x: 700
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 0
+    viewport:
+      x: 204.5
+      y: -102
+      zoom: 1
+  rag_pipeline_variables: []

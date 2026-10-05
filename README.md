@@ -148,6 +148,23 @@ sqlbot_datasource_list
 
 ## 8. Dify Workflow Demo
 
+This repository includes an exported Dify DSL app:
+
+```text
+dify-apps/integrated-sqlbot-demo.yml
+```
+
+After Dify is initialized and the SQLBot MCP Server is configured, import this DSL in Dify to quickly create the demo app.
+
+The imported app expects an MCP Server with:
+
+```text
+Server Identifier: sqlbot_mcp
+Tool: sqlbot_ask
+```
+
+Manual creation steps are listed below for reference.
+
 Create a Workflow app:
 
 ```text
