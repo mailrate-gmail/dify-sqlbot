@@ -88,7 +88,48 @@ Schema: business
 
 It is not exposed to the public network.
 
-## 6. Dify MCP Configuration
+## 6. Import Demo Business Data
+
+This repository includes demo data exported from the `business` schema:
+
+```text
+seed/business_data.sql
+```
+
+Import it into an existing PostgreSQL database after the full application schema has been created.
+
+If the target PostgreSQL uses password authentication over TCP:
+
+```bash
+DB_HOST=127.0.0.1 \
+DB_PORT=5432 \
+DB_NAME=sales_management \
+DB_USER=postgres \
+DB_PASSWORD=<postgres-password-if-needed> \
+RESET_BUSINESS_DATA=true \
+./scripts/import_business_data.sh
+```
+
+If the target PostgreSQL is local and uses peer authentication for the `postgres` OS user:
+
+```bash
+sudo -u postgres \
+  DB_HOST=/var/run/postgresql \
+  DB_PORT=5432 \
+  DB_NAME=sales_management \
+  DB_USER=postgres \
+  RESET_BUSINESS_DATA=true \
+  ./scripts/import_business_data.sh
+```
+
+Notes:
+
+- The import script defaults to schema `business`.
+- The SQL file is data-only. The target database must already have the required schemas, tables, functions, and constraints.
+- `RESET_BUSINESS_DATA=true` truncates all tables in the `business` schema before import.
+- The script uses `session_replication_role=replica` to handle circular foreign keys, so it should be run with a PostgreSQL superuser such as `postgres`.
+
+## 7. Dify MCP Configuration
 
 In Dify, add MCP Server:
 
@@ -105,7 +146,7 @@ sqlbot_ask
 sqlbot_datasource_list
 ```
 
-## 7. Dify Workflow Demo
+## 8. Dify Workflow Demo
 
 Create a Workflow app:
 
@@ -146,7 +187,7 @@ The adapter returns Markdown with:
 - ECharts code block
 - generated SQL
 
-## 8. Operations
+## 9. Operations
 
 ```bash
 cd /opt/dify-sqlbot/dify/docker
@@ -172,7 +213,7 @@ sudo docker compose --env-file .env --env-file .env.sqlbot \
   -f docker-compose.yaml -f docker-compose.sqlbot.yaml up -d --build
 ```
 
-## 9. Security Notes
+## 10. Security Notes
 
 Do not expose these ports publicly:
 
