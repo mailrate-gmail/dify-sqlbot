@@ -20,11 +20,6 @@ DIFY_PORT="${DIFY_PORT:-8088}"
 DOCKER_HOST_BRIDGE_IP="${DOCKER_HOST_BRIDGE_IP:-172.17.0.1}"
 SSRF_PROXY_ALLOW_PRIVATE_IPS="${SSRF_PROXY_ALLOW_PRIVATE_IPS:-$DOCKER_HOST_BRIDGE_IP/32}"
 
-if [[ "${SQLBOT_DIFY_MCP_IMAGE:-}" == "" || "${SQLBOT_DIFY_MCP_IMAGE:-}" == *"<"* ]]; then
-  echo "Set SQLBOT_DIFY_MCP_IMAGE in .env before running install.sh"
-  exit 1
-fi
-
 if [[ "${SQLBOT_PASSWORD:-}" == "" || "${SQLBOT_PASSWORD:-}" == *"<"* ]]; then
   echo "Set SQLBOT_PASSWORD in .env before running install.sh"
   exit 1
@@ -68,14 +63,16 @@ fi
 echo "[5/7] Installing SQLBot compose extension"
 cp "$SCRIPT_DIR/docker-compose.sqlbot.yaml" "$DIFY_DIR/docker/docker-compose.sqlbot.yaml"
 cp "$ENV_FILE" "$DIFY_DIR/docker/.env.sqlbot"
+rm -rf "$DIFY_DIR/docker/sqlbot-dify-mcp"
+cp -R "$SCRIPT_DIR/sqlbot-dify-mcp" "$DIFY_DIR/docker/sqlbot-dify-mcp"
 
-echo "[6/7] Pulling images"
+echo "[6/7] Pulling base images"
 sudo docker compose \
   --env-file .env \
   --env-file .env.sqlbot \
   -f docker-compose.yaml \
   -f docker-compose.sqlbot.yaml \
-  pull
+  pull --ignore-buildable
 
 echo "[7/7] Starting stack"
 sudo docker compose \
@@ -83,7 +80,7 @@ sudo docker compose \
   --env-file .env.sqlbot \
   -f docker-compose.yaml \
   -f docker-compose.sqlbot.yaml \
-  up -d
+  up -d --build
 
 echo
 echo "Deployment started. Check status:"

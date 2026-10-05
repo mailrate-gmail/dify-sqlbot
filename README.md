@@ -15,18 +15,25 @@ It includes:
 - Public ports available:
   - `8088` for Dify
   - `8000` for SQLBot
-- A pushed `sqlbot-dify-mcp` image, for example:
-  - `docker.io/<user>/sqlbot-dify-mcp:1.0.0`
+- Internet access to GitHub, Docker Hub, and PyPI for first-time installation.
 
-## 2. Build and Push Adapter Image
+## 2. Adapter Image
 
-On a machine with Docker login configured:
+By default, the target VM builds `sqlbot-dify-mcp` locally from source under:
+
+```text
+./sqlbot-dify-mcp
+```
+
+No custom Docker Hub image is required.
+
+Optional: if your target VM cannot access PyPI or you want faster installs, build and push the adapter image first:
 
 ```bash
 ./push-image.sh docker.io/<user>/sqlbot-dify-mcp 1.0.0
 ```
 
-Then use this image in `.env`:
+Then override this in `.env`:
 
 ```env
 SQLBOT_DIFY_MCP_IMAGE=docker.io/<user>/sqlbot-dify-mcp:1.0.0
@@ -50,7 +57,6 @@ sudo bash install.sh
 Required `.env` values:
 
 ```env
-SQLBOT_DIFY_MCP_IMAGE=<your image>
 SQLBOT_PASSWORD=<SQLBot admin password used by adapter>
 ```
 
@@ -163,7 +169,7 @@ Start stack:
 
 ```bash
 sudo docker compose --env-file .env --env-file .env.sqlbot \
-  -f docker-compose.yaml -f docker-compose.sqlbot.yaml up -d
+  -f docker-compose.yaml -f docker-compose.sqlbot.yaml up -d --build
 ```
 
 ## 9. Security Notes

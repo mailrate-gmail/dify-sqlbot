@@ -16,7 +16,10 @@ services:
       - ${SQLBOT_DATA_ROOT:-/opt/dify-sqlbot/sqlbot/data}/postgresql:/var/lib/postgresql/data
 
   sqlbot-dify-mcp:
-    image: ${SQLBOT_DIFY_MCP_IMAGE:?Set SQLBOT_DIFY_MCP_IMAGE in .env}
+    build:
+      context: ${SQLBOT_DIFY_MCP_BUILD_CONTEXT:-./sqlbot-dify-mcp}
+      dockerfile: Dockerfile
+    image: ${SQLBOT_DIFY_MCP_IMAGE:-sqlbot-dify-mcp:local}
     container_name: sqlbot-dify-mcp
     restart: unless-stopped
     network_mode: host
