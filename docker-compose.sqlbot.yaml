@@ -1,0 +1,54 @@
+services:
+  sqlbot:
+    image: ${SQLBOT_IMAGE:-dataease/sqlbot:latest}
+    container_name: sqlbot
+    restart: unless-stopped
+    privileged: true
+    network_mode: bridge
+    ports:
+      - "${SQLBOT_WEB_BIND:-0.0.0.0}:${SQLBOT_WEB_PORT:-8000}:8000"
+      - "${SQLBOT_MCP_BIND:-127.0.0.1}:${SQLBOT_MCP_PORT:-8001}:8001"
+    volumes:
+      - ${SQLBOT_DATA_ROOT:-/opt/dify-sqlbot/sqlbot/data}/sqlbot/excel:/opt/sqlbot/data/excel
+      - ${SQLBOT_DATA_ROOT:-/opt/dify-sqlbot/sqlbot/data}/sqlbot/file:/opt/sqlbot/data/file
+      - ${SQLBOT_DATA_ROOT:-/opt/dify-sqlbot/sqlbot/data}/sqlbot/images:/opt/sqlbot/images
+      - ${SQLBOT_DATA_ROOT:-/opt/dify-sqlbot/sqlbot/data}/sqlbot/logs:/opt/sqlbot/app/logs
+      - ${SQLBOT_DATA_ROOT:-/opt/dify-sqlbot/sqlbot/data}/postgresql:/var/lib/postgresql/data
+
+  sqlbot-dify-mcp:
+    image: ${SQLBOT_DIFY_MCP_IMAGE:?Set SQLBOT_DIFY_MCP_IMAGE in .env}
+    container_name: sqlbot-dify-mcp
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      SQLBOT_BASE_URL: ${SQLBOT_BASE_URL:-http://127.0.0.1:8000}
+      SQLBOT_USERNAME: ${SQLBOT_USERNAME:-admin}
+      SQLBOT_PASSWORD: ${SQLBOT_PASSWORD:?Set SQLBOT_PASSWORD in .env}
+    command:
+      - uvicorn
+      - sqlbot_dify_mcp:app
+      - --host
+      - ${DOCKER_HOST_BRIDGE_IP:-172.17.0.1}
+      - --port
+      - "${SQLBOT_DIFY_MCP_PORT:-8017}"
+    depends_on:
+      - sqlbot
+
+  pg-local-proxy:
+    image: ${PG_LOCAL_PROXY_IMAGE:-alpine/socat:latest}
+    container_name: pg-local-proxy
+    restart: unless-stopped
+    network_mode: host
+    command:
+      - -d
+      - -d
+      - TCP-LISTEN:${PG_LOCAL_PROXY_PORT:-15432},bind=${DOCKER_HOST_BRIDGE_IP:-172.17.0.1},fork,reuseaddr
+      - TCP:${PG_LOCAL_TARGET_HOST:-127.0.0.1}:${PG_LOCAL_TARGET_PORT:-5432}
+
+  ssrf_proxy:
+    environment:
+      SSRF_PROXY_ALLOW_PRIVATE_IPS: ${SSRF_PROXY_ALLOW_PRIVATE_IPS:-172.17.0.1/32}
+
+  agent_ssrf_proxy:
+    environment:
+      SSRF_PROXY_ALLOW_PRIVATE_IPS: ${SSRF_PROXY_ALLOW_PRIVATE_IPS:-172.17.0.1/32}
