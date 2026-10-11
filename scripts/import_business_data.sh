@@ -9,7 +9,7 @@ DB_PORT="${DB_PORT:-5432}"
 DB_NAME="${DB_NAME:-sales_management}"
 DB_USER="${DB_USER:-postgres}"
 DB_SCHEMA="${DB_SCHEMA:-business}"
-SQL_FILE="${SQL_FILE:-$REPO_ROOT/seed/business_data.sql}"
+SQL_FILE="${SQL_FILE:-$REPO_ROOT/seed/business_schema_and_data.sql}"
 RESET_BUSINESS_DATA="${RESET_BUSINESS_DATA:-false}"
 
 if [[ ! -f "$SQL_FILE" ]]; then

@@ -90,13 +90,21 @@ Schema: business
 
 ## 6. 导入演示业务数据
 
-本仓库包含从 `business` schema 导出的演示数据：
+本仓库包含从 `business` schema 导出的完整表结构和演示数据：
 
 ```text
-seed/business_data.sql
+seed/business_schema_and_data.sql
 ```
 
-在导入数据前，目标数据库必须已经完成完整应用 schema 初始化。
+该 SQL 文件包含：
+
+- `CREATE SCHEMA business`
+- `CREATE TABLE business.*`
+- 序列定义和默认值
+- `INSERT INTO business.* (...) VALUES (...)` 格式的数据
+- 序列 `setval`
+
+为了便于在空白数据库中直接演示 SQLBot，文件不包含触发器和外键约束，因为原始库中的部分触发器依赖 `public` 函数，部分外键依赖 `config.region`。
 
 如果目标 PostgreSQL 通过 TCP 密码认证访问：
 
@@ -125,9 +133,9 @@ sudo -u postgres \
 说明：
 
 - 导入脚本默认操作 `business` schema。
-- `seed/business_data.sql` 是纯数据文件。目标数据库必须已存在所需 schema、表、函数和约束。
+- `seed/business_schema_and_data.sql` 可以导入空白数据库，并创建 `business` schema 下的 20 张表及演示数据。
 - `RESET_BUSINESS_DATA=true` 会先清空 `business` schema 下的所有表，再导入演示数据。
-- 脚本会使用 `session_replication_role=replica` 处理循环外键，因此建议使用 PostgreSQL 超级用户执行，例如 `postgres`。
+- 脚本会使用 `session_replication_role=replica`，建议使用 PostgreSQL 超级用户执行，例如 `postgres`。
 
 ## 7. Dify MCP 配置
 
