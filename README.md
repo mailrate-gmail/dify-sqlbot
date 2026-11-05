@@ -251,3 +251,4 @@ sudo docker compose --env-file .env --env-file .env.sqlbot \
 - `5003`
 
 不要提交 `.env` 到 Git。
+2026年 11 月 5 日
